@@ -3,14 +3,10 @@ package org.allenai.reasoning.arilog
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph
 import com.tinkerpop.blueprints.{Graph, Direction, Edge, Vertex}
 import org.allenai.reasoning.arilog.RuleParts.RulePart
-import java.io.File
 import scala.collection.JavaConversions._
 
-import scala.io.Source
-
-
-object LFGraphHelper {
-
+object GraphHelper {
+  
   def prettyString(graph:TinkerGraph) = {
     import scala.collection.JavaConversions._
     def vertexString(vertex: Vertex) = s"${vertex.getId()}:[${vertex.getProperty("isa")} (${vertex.getProperty("RulePart")})]"
@@ -20,7 +16,6 @@ object LFGraphHelper {
   }
 
   def antecedentEdges(g:Graph) = g.getEdges.filter(e => isRulePartEdge(e, RuleParts.Antecedent))
-
   def consequentEdges(g:Graph) = g.getEdges.filter(e => isRulePartEdge(e, RuleParts.Consequent))
 
   def isRulePartEdge(e:Edge, rulePart:RulePart) = {

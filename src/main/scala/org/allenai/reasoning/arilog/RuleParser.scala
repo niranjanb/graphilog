@@ -5,21 +5,29 @@ import java.io.File
 import scala.io.Source
 
 
+//Terms are skolem constants
 trait Term{
   val id:String
   val isa:Option[String]
   val metaData:Map[String, String]
 }
+
+//Entity skolems
 case class Entity(id:String, isa:Option[String], metaData:Map[String, String]) extends Term
+
+//Event skolems
 case class Event(id:String, isa:Option[String], metaData:Map[String, String]) extends Term
 
+
+//A KB entry consists of a rule and its graphical representation.
 case class KBEntry(id:String, english:String, rule:Rule, graph:TinkerGraph) {
   def prettyString: String = {
-    s"Id:${id}\nEnglish:${english}\n${rule.prettyString}\n${LFGraphHelper.prettyString(graph)}"
+    s"Id:${id}\nEnglish:${english}\n${rule.prettyString}\n${GraphHelper.prettyString(graph)}"
   }
 }
 
-object LFParser {
+//A parser for KB entries. 
+object RuleParser {
   def parse(file:File): Seq[KBEntry] = {
     var englishMap = Map[String, String]()
     val commentRe = """^%.*""".r
@@ -34,7 +42,7 @@ object LFParser {
       Rule(line) match {
         case Some(rule:Rule) => {
           val english = englishMap.getOrElse(rule.id, "")
-          Some(KBEntry(rule.id, english, rule, LFGraphHelper.createGraph(rule)))
+          Some(KBEntry(rule.id, english, rule, GraphHelper.createGraph(rule)))
         }
         case _ => None
       }
@@ -42,14 +50,14 @@ object LFParser {
   }
 }
 
-object LFParserTest{
+object RuleParserTest extends App{
   val string1 = """rule1:: isa(E17, "eat"), isa(E4, "humans"), isa(E19, "healthy foods"), for(E17, E4), object(E17, E19) -> effect(E17, E12), isa(E12, "be"), isa(E13, "healthy"), agent(E12, E4), object(E12, E13)."""
   testGraph(string1)
   val string2 = """rule1:: isa(E17, "eat"), isa(E4, "humans"), isa(E19, "healthy foods"), for(E17, E4), object(E17, E19)."""
   testGraph(string2)
 
   def testGraph(string:String) {
-    import LFGraphHelper._
+    import GraphHelper._
     Rule(string) match {
       case Some(rule:Rule) => println(prettyString(createGraph(rule)))
       case None => println(s"Failed to extract rule from: ${string}")

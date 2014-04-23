@@ -1,6 +1,5 @@
 package org.allenai.reasoning.arilog
 
-
 import scala.collection.JavaConversions._
 import edu.washington.cs.knowitall.morpha.MorphaStemmer
 
